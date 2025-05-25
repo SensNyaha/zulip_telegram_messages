@@ -1,7 +1,9 @@
 const getMessageFromCtx = require("../helpers/telegraf/getMessageFromCtx");
 const verifyZuliprcConfig = require("../helpers/zulip/verifyZuliprcConfig");
-const addNewUser = require("../helpers/sqlite/addNewUsers");
+const createNewUser = require("../helpers/sqlite/creatings/createNewUser");
 const initCtxSession = require("../helpers/telegraf/initCtxSession");
+const getChatIdFromCtx = require("../helpers/telegraf/getChatIdFromCtx");
+const createNewZulipCredentials = require("../helpers/sqlite/creatings/createNewZulipCredentials");
 
 
 async function processRegistration(ctx, db) {
@@ -15,12 +17,20 @@ async function processRegistration(ctx, db) {
         ctx.session.currentStageInfo.realm = getMessageFromCtx(ctx).text
         const verifyResult = await verifyZuliprcConfig({...ctx.session.currentStageInfo});
         if (!verifyResult) {
-            ctx.reply("There was an error while verifying your Zulip credits. Try again with another credits")
+            ctx.reply("There was an error while verifying your Zulip credentials. Try again with another credentials")
         } else {
-            await ctx.reply("Your credits is OK! Trying to save your data in my DB")
-            const success = addNewUser(db, ctx.update.message.chat.id, JSON.stringify(ctx.session.currentStageInfo))
-            if (success) {
-                ctx.reply("Nicely DONE")
+            await ctx.reply("Your credentials is OK! Trying to save your data in my DB")
+            const successAddingUser = createNewUser(db, getChatIdFromCtx(ctx))
+            // TODO: создать тут и запись пользователя в UserFastReactions
+            if (successAddingUser) {
+                ctx.reply("User successfully created. Trying to save your Zulip credentials in my DB")
+
+                const successAddingZulipCredentials = createNewZulipCredentials(db, getChatIdFromCtx(ctx), {...ctx.session.currentStageInfo}, true)
+                if (successAddingZulipCredentials) {
+                    ctx.reply("Your Zulip credentials saved successfully. Registration process is finished!")
+                } else {
+                    ctx.reply("Something happened while i was trying to work with DB. Try again next time!")
+                }
             } else {
                 ctx.reply("Something happened while i was trying to work with DB. Try again next time!")
             }

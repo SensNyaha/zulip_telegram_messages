@@ -1,150 +1,75 @@
+// импорты системных библиотек
 const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const BSqlite = require("better-sqlite3")
+// импорт драйвера для работы с SQLite
+const SQLite = require("better-sqlite3")
 
-const getChatIdFromCtx = require("./helpers/telegraf/getChatIdFromCtx");
+// импорт окружения для создания бота телеграм
+const { Telegraf, session } = require('telegraf')
+const { Redis } = require("@telegraf/session/redis")
 
-const { Telegraf,session } = require('telegraf')
-
-
+// инициализация бота телеграм и хранилища для работы с сессионными данными
 const bot = new Telegraf(process.env.TG_BOT_KEY)
-
-const {Redis} = require("@telegraf/session/redis")
-
 const store = Redis({ url: process.env.REDIS_URL });
+bot.use(session( store ));
 
+
+// инициализация SQLite хранилища для приложения
 const sqliteDbFile = path.resolve(__dirname, 'sqlite3.db');
-const db = new BSqlite(sqliteDbFile);
+const db = new SQLite(sqliteDbFile);
 
-const initDB = require("./helpers/sqlite/initUsersTable");
+// инициализация таблиц базы данных
+const initDB = require("./helpers/sqlite/initializings/initDB");
 initDB(db)
 
-const isUserRegistered = require("./helpers/sqlite/isUserExist")
+// импорты функций для работы части логики
+const menu = require("./helpers/app/botCommands/menu");
+const cancel = require("./helpers/app/botCommands/cancel");
+const register = require("./helpers/app/botCommands/register");
+const unregister = require("./helpers/app/botCommands/unregister");
+const changeApiKey = require("./helpers/app/botCommands/changeapikey");
+const verifyApiKey = require("./helpers/app/botCommands/verifyapikey");
+const messageEvent = require("./helpers/app/botEvents/message");
 
-bot.use(session({ store }));
+bot.command("menu", async (ctx) => menu(ctx))
+bot.command("cancel", async (ctx) => cancel(ctx))
+bot.command("register", async (ctx) => register(ctx, db))
+bot.command("unregister", async (ctx) => unregister(ctx, db))
+bot.command("changeapikey", async (ctx) => changeApiKey(ctx, db))
+bot.command("verifyapikey", async (ctx) => verifyApiKey(ctx, db))
 
-
-const initCtxSession = require("./helpers/telegraf/initCtxSession");
-const processRegistration = require("./dialogBranches/register");
-const deleteUser = require("./helpers/sqlite/deleteUser");
-const processChangeApiKey = require("./dialogBranches/changeapikey");
-const getUserById = require("./helpers/sqlite/getUserById");
-const verifyZuliprcConfig = require("./helpers/zulip/verifyZuliprcConfig");
-const processAllUsers = require("./helpers/app/processAllUsers");
-
-bot.command("menu", async(ctx) => {
-    ctx.reply('Choose command:', {
-        reply_markup: {
-            keyboard: [
-                ['/register', '/unregister', "/verifyapikey", "/changeapikey", "/cancel"]
-            ],
-            resize_keyboard: true,
-            one_time_keyboard: true,
-        },
-    });
-})
-
-bot.command("cancel", async(ctx) => {
-    initCtxSession(ctx, true);
-})
-
-bot.command("register", async(ctx) => {
-    if (isUserRegistered(db, getChatIdFromCtx(ctx))) {
-        await ctx.reply("You are already registered!");
-        return;
-    }
-
-    initCtxSession(ctx, false);
-    if (ctx.session.currentStage === "register") {
-        ctx.reply("You are now in register mode, follow previous step")
-    } else {
-        ctx.session.currentStage = "register"
-        ctx.session.currentStageInfo = {
-            apiKey: null,
-            username: null,
-            realm: null
-        }
-        ctx.reply("Enter your API KEY from ZULIP application")
-    }
-})
-
-bot.command("unregister", async(ctx) => {
-    if (!isUserRegistered(db, getChatIdFromCtx(ctx))) {
-        await ctx.reply("You are not registered yet!");
-        return;
-    }
-    let success = deleteUser(db, getChatIdFromCtx(ctx))
-    if (success) {
-        ctx.reply("Your account successfully unregistered!");
-    } else {
-        ctx.reply("Something happened while i was trying to unregister you")
-    }
-})
-
-bot.command("changeapikey", async(ctx) => {
-    if (!isUserRegistered(db, getChatIdFromCtx(ctx))) {
-        await ctx.reply("You are not registered yet!");
-        return;
-    }
-
-    initCtxSession(ctx, false);
-    if (ctx.session.currentStage === "changeapikey") {
-        ctx.reply("You are now in changeapikey mode, follow previous step")
-    } else {
-        ctx.session.currentStage = "changeapikey"
-        ctx.session.currentStageInfo = null
-        ctx.reply("Enter your NEW API KEY from ZULIP application")
-    }
-})
+bot.on("message", async (ctx) => messageEvent(ctx, db));
 
 
-bot.command("verifyapikey", async(ctx) => {
-    if (!isUserRegistered(db, getChatIdFromCtx(ctx))) {
-        await ctx.reply("You are not registered yet!");
-        return;
-    }
-    let result = getUserById(db, getChatIdFromCtx(ctx))
-    initCtxSession(ctx, true);
-
-    const zulipVerifySuccess = await verifyZuliprcConfig({
-        apiKey: result.zulipKey,
-        username: result.zulipEmail,
-        realm: result.zulipSite,
-    })
-
-    if (!zulipVerifySuccess) {
-        ctx.reply("Something is wrong with your api key. Seems like you changed it in the app. Renew it in my DB")
-    } else {
-        ctx.reply("Everything is cool!")
-    }
-})
-
-bot.on("message", async (ctx) => {
-    if (ctx.session?.currentStage === "register") {
-        await processRegistration(ctx, db)
-    } else if (ctx.session?.currentStage === "changeapikey") {
-        await processChangeApiKey(ctx, db)
-    } else {
-        ctx.reply("UNKNOWN CONTEXT OF EXECUTION")
-    }
-})
-
-
+// bot.on("callback_query", async (ctx) => {
+//     console.log(ctx.update.callback_query)
+//     // здесь надо обработать действия пользователей по нажатию кнопок под уведомлениями о сообщениях
+// })
 bot.launch()
 
 
-setInterval(processAllUsers, 5000, db)
-
-
-// при создании пользователя запросить последнее событие, проверить прочитано ли оно, если нет, найти последнее прочитанное
-// записать его в базу как идентификатор от которого будем плясать
-
-// поставить автоматический запрос сообщений каждые 30 секунд (отсчет от последнего прочитанного айдишника пусть 5 штук в одном запросе)
-// если результат пустой - выходим из функции
-// если результат меньше чем емкость одного запроса - 
-//      если в выводе ТОЛЬКО непрочитанные сообщения - добавить их в массив непрочитанных сообщений пользователя
-//      если в выводе есть хотя бы одно прочитанное сообщение - добавить в массив только непрочитанные, сместить метку идентификатора последнего прочтенного события
-//      
-//      если в массиве непрочитанных сообщений пользователя уже есть сообщение с таким 
+//
+// setInterval(processAllUsers, 5000, db, bot)
+//
+// setInterval(() => {
+//     let unreads = db.prepare(`
+//         SELECT id, unread_messages
+//         FROM users
+//     `).all()
+//     if (unreads.length === 0) return
+//     let unreadOfFirst = JSON.parse(unreads[0].unread_messages)
+//     unreadOfFirst?.forEach(async (unread) => {
+//         if (!messagesId.includes(unread.id)) {
+//             let {message_id} = await bot.telegram.sendMessage(unreads[0].id, unread.content)
+//             messagesId.push(unread.id)
+//
+//             setTimeout(() => {
+//                 bot.telegram.deleteMessage(unreads[0].id, message_id)
+//             }, 5000)
+//         }
+//     })
+//
+//
+// }, 5000)

@@ -8,7 +8,7 @@ async function fetchLastUnreadMessages(zuliprcObj, count) {
             num_before: count,
             num_after: 0,
             narrow: [
-                {operator: 'is', operand: 'private'},
+                //{operator: 'is', operand: 'private'},
                 {operator: 'is', operand: 'unread'}
             ]
         })

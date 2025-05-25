@@ -1,15 +1,15 @@
 const zulipInit = require('zulip-js');
 const filterUsersMessagesFromResponse = require('./filterUsersMessagesFromResponse');
 
-async function fetchUsersUnreadMessages(zulipCredits, count) {
+async function fetchUsersUnreadMessages(zulipCredentials, count) {
     try {
-        const zulip = await zulipInit(zulipCredits);
+        const zulip = await zulipInit(zulipCredentials);
         const response = await zulip.messages.retrieve({
             anchor: "newest",
             num_before: count,
             num_after: 0,
             narrow: [
-                {operator: 'is', operand: 'private'},
+                //{operator: 'is', operand: 'private'},
                 {operator: 'is', operand: 'unread'}
             ]
         })
@@ -17,11 +17,11 @@ async function fetchUsersUnreadMessages(zulipCredits, count) {
             throw new Error("Error while fetching messages")
         }
 
-        const filtered = filterUsersMessagesFromResponse(response.messages, zulipCredits.username);
+        const filtered = filterUsersMessagesFromResponse(response.messages, zulipCredentials.username);
 
         return filtered
     } catch (e) {
-        console.log(zulipCredits.username, e.message)
+        console.log(zulipCredentials.username, e.message)
         return null
     }
 }
