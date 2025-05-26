@@ -33,6 +33,9 @@ const changeApiKey = require("./helpers/app/botCommands/changeapikey");
 const verifyApiKey = require("./helpers/app/botCommands/verifyapikey");
 const messageEvent = require("./helpers/app/botEvents/message");
 
+const processAllUsers = require("./helpers/app/processing/processAllUsers");
+
+
 bot.command("menu", async (ctx) => menu(ctx))
 bot.command("cancel", async (ctx) => cancel(ctx))
 bot.command("register", async (ctx) => register(ctx, db))
@@ -51,7 +54,9 @@ bot.launch()
 
 
 //
-// setInterval(processAllUsers, 5000, db, bot)
+setInterval(processAllUsers, 5000, db, bot)
+//TODO: тут сделать раз в час проверку всех замороженных акков на валидность зулипных данных
+
 //
 // setInterval(() => {
 //     let unreads = db.prepare(`

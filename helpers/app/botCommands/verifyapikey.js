@@ -2,7 +2,7 @@ const isUserExist = require("../../sqlite/checkings/isUserExist");
 const getChatIdFromCtx = require("../../telegraf/getChatIdFromCtx");
 const initCtxSession = require("../../telegraf/initCtxSession");
 const getZulipCredentialsByUserId = require("../../sqlite/gettings/getZulipCredentialsByUserId");
-const convertZulipCredentialsFromDbToRequest = require("../convertZulipCredentialsFromDbToRequest");
+const convertZulipCredentialsFromDbToRequest = require("../../zulip/convertZulipCredentialsFromDbToRequest");
 const verifyZuliprcConfig = require("../../zulip/verifyZuliprcConfig");
 
 const verifyApiKey = async(ctx, db) => {

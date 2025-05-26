@@ -4,6 +4,7 @@ const createNewUser = require("../helpers/sqlite/creatings/createNewUser");
 const initCtxSession = require("../helpers/telegraf/initCtxSession");
 const getChatIdFromCtx = require("../helpers/telegraf/getChatIdFromCtx");
 const createNewZulipCredentials = require("../helpers/sqlite/creatings/createNewZulipCredentials");
+const createNewUserFastReactions = require("../helpers/sqlite/creatings/createNewUserFastReactions");
 
 
 async function processRegistration(ctx, db) {
@@ -21,8 +22,8 @@ async function processRegistration(ctx, db) {
         } else {
             await ctx.reply("Your credentials is OK! Trying to save your data in my DB")
             const successAddingUser = createNewUser(db, getChatIdFromCtx(ctx))
-            // TODO: создать тут и запись пользователя в UserFastReactions
-            if (successAddingUser) {
+            const successAddingUserFastReactions = createNewUserFastReactions(db, getChatIdFromCtx(ctx))
+            if (successAddingUser && successAddingUserFastReactions) {
                 ctx.reply("User successfully created. Trying to save your Zulip credentials in my DB")
 
                 const successAddingZulipCredentials = createNewZulipCredentials(db, getChatIdFromCtx(ctx), {...ctx.session.currentStageInfo}, true)
