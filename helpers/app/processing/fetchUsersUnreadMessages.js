@@ -11,7 +11,8 @@ async function fetchUsersUnreadMessages(zulipCredentials, count) {
             narrow: [
                 //{operator: 'is', operand: 'private'},
                 {operator: 'is', operand: 'unread'}
-            ]
+            ],
+            apply_markdown: false
         })
         if (response.result !== "success") {
             throw new Error("Error while fetching messages")

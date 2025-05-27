@@ -8,6 +8,7 @@ async function replyWithQuotedMessage(zuliprcObj, messageId, reply) {
             anchor: messageId,
             num_before: 0,
             num_after: 0,
+            apply_markdown: false
         });
         const message = messageInfo.messages[0];
         if (!message) {
