@@ -37,6 +37,7 @@ const callbackQueryEvent = require("./helpers/app/botEvents/callbackQuery");
 
 const processAllUsers = require("./helpers/app/processing/processAllUsers");
 
+bot.command("start", async (ctx) => menu(ctx))
 bot.command("menu", async (ctx) => menu(ctx))
 bot.command("cancel", async (ctx) => cancel(ctx))
 bot.command("register", async (ctx) => register(ctx, db))
@@ -55,3 +56,4 @@ setInterval(processAllUsers, 5000, db, bot)
 //TODO: сделать возможность настраивать таймаут реакции на сообщение
 //TODO: сделать возможность работы с сообщениями, содержащими цитаты, картинки и файлы, и вот такие символы -&gt;
 //TODO: сделать жирным часть текста с системным текстом
+//TODO: добавить русский язык

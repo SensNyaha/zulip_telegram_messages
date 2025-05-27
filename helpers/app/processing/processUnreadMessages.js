@@ -4,6 +4,8 @@ const createNewTelegramNotification = require("../../sqlite/creatings/createNewT
 const getUserFastReactions = require("../../sqlite/gettings/getUserFastReactions");
 const formatTimeLocalized = require("../others/formatTime");
 const convertToEmoji = require("./convertToEmoji");
+const escapeMarkdownV2 = require("../others/escapeMarkdownV2");
+
 
 const processUnreadMessages = (db, bot, messages, user) => {
     const userFastReactions = getUserFastReactions(db, user.id);
@@ -28,10 +30,17 @@ const processUnreadMessages = (db, bot, messages, user) => {
             telegramMessageContent = JSON.stringify(choppedMsg);
         }
 
+
+
         if ((Date.now() / 1000 - msg.timestamp) >= user.notify_timeout_sec) {
             const notification = getTelegramNotification(db, user.id, msg.id);
             if (!notification) {
-                bot.telegram.sendMessage(user.id, convertToEmoji(telegramMessageContent), createNotificationReplyKeyboard(db, choppedMsg.id, userFastReactions))
+                bot.telegram.sendMessage(user.id,
+                    convertToEmoji(telegramMessageContent),
+                    {
+                    ...createNotificationReplyKeyboard(db, choppedMsg.id, userFastReactions),
+                    //parse_mode: "Markdown"
+                })
                     .then(res => {
                         createNewTelegramNotification(db, user.id, msg.id, res.message_id)
                     })
