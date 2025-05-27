@@ -1,0 +1,16 @@
+stages:
+  - deploy
+
+deploy_production:
+  stage: deploy
+  only:
+    - main
+  script:
+    - echo "$SSH_PRIVATE_KEY" > deploy_key
+    - chmod 600 deploy_key
+
+    - ssh -o StrictHostKeyChecking=no -i deploy_key root@77.221.138.30 '
+      cd zulip_telegram_messages &&
+      git pull &&
+      ./deploy.sh
+      '
