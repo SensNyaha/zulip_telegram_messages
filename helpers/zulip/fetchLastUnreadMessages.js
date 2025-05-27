@@ -12,7 +12,7 @@ async function fetchLastUnreadMessages(zuliprcObj, count) {
                 {operator: 'is', operand: 'unread'}
             ]
         })
-        
+
         if (response.result !== "success") {
             throw new Error("Error while fetching messages")
         }

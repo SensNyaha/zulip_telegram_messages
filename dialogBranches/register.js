@@ -13,7 +13,7 @@ async function processRegistration(ctx, db) {
         ctx.reply("Enter your email - domain address")
     } else if (ctx.session.currentStageInfo.username === null) {
         ctx.session.currentStageInfo.username = getMessageFromCtx(ctx).text
-        ctx.reply("Enter your zulip server url")
+        ctx.reply("Enter your zulip server url WITH A CLOSING SLASH IN THE END OF THE URL")
     } else if (ctx.session.currentStageInfo.realm === null) {
         ctx.session.currentStageInfo.realm = getMessageFromCtx(ctx).text
         const verifyResult = await verifyZuliprcConfig({...ctx.session.currentStageInfo});

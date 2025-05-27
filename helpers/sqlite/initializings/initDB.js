@@ -25,16 +25,17 @@ function initDB(db) {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             type TEXT NOT NULL,
             value TEXT NOT NULL,
+            text_value TEXT NOT NULL, 
             UNIQUE(type, value)
         )
     `).run();
 
     db.prepare(`
-        INSERT OR IGNORE INTO FastReactions(id, type, value) VALUES 
-            (0, 'Read', '✔'),
-            (1, 'Reply', 'OK'),
-            (2, 'React', '👍'),
-            (3, 'React', '👌')
+        INSERT OR IGNORE INTO FastReactions(id, type, value, text_value) VALUES 
+            (0, 'Read', '✔', 'done'),
+            (1, 'Reply', 'OK', 'OK'), 
+            (2, 'React', '👍', '+1'),
+            (3, 'React', '👌', 'ok')
     `).run();
 
     db.prepare(`

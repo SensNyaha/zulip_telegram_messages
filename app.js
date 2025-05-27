@@ -32,9 +32,10 @@ const unregister = require("./helpers/app/botCommands/unregister");
 const changeApiKey = require("./helpers/app/botCommands/changeapikey");
 const verifyApiKey = require("./helpers/app/botCommands/verifyapikey");
 const messageEvent = require("./helpers/app/botEvents/message");
+const callbackQueryEvent = require("./helpers/app/botEvents/callbackQuery");
+
 
 const processAllUsers = require("./helpers/app/processing/processAllUsers");
-
 
 bot.command("menu", async (ctx) => menu(ctx))
 bot.command("cancel", async (ctx) => cancel(ctx))
@@ -44,37 +45,12 @@ bot.command("changeapikey", async (ctx) => changeApiKey(ctx, db))
 bot.command("verifyapikey", async (ctx) => verifyApiKey(ctx, db))
 
 bot.on("message", async (ctx) => messageEvent(ctx, db));
+bot.on("callback_query", async (ctx) => callbackQueryEvent(ctx, db, bot))
 
-
-// bot.on("callback_query", async (ctx) => {
-//     console.log(ctx.update.callback_query)
-//     // здесь надо обработать действия пользователей по нажатию кнопок под уведомлениями о сообщениях
-// })
 bot.launch()
 
-
-//
 setInterval(processAllUsers, 5000, db, bot)
 //TODO: тут сделать раз в час проверку всех замороженных акков на валидность зулипных данных
-
-//
-// setInterval(() => {
-//     let unreads = db.prepare(`
-//         SELECT id, unread_messages
-//         FROM users
-//     `).all()
-//     if (unreads.length === 0) return
-//     let unreadOfFirst = JSON.parse(unreads[0].unread_messages)
-//     unreadOfFirst?.forEach(async (unread) => {
-//         if (!messagesId.includes(unread.id)) {
-//             let {message_id} = await bot.telegram.sendMessage(unreads[0].id, unread.content)
-//             messagesId.push(unread.id)
-//
-//             setTimeout(() => {
-//                 bot.telegram.deleteMessage(unreads[0].id, message_id)
-//             }, 5000)
-//         }
-//     })
-//
-//
-// }, 5000)
+//TODO: сделать возможность изменять список своих быстрых реакций
+//TODO: сделать возможность работы с сообщениями, содержащими цитаты, картинки и файлы
+//TODO: избавиться от HTML разметки в сообщениях
