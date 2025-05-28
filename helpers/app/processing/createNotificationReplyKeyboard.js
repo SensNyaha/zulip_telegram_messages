@@ -12,6 +12,7 @@ const createNotificationReplyKeyboard = (db, zulipMessageId, userFastReactions) 
                 [
                     createNotificationReplyButton(zulipMessageId, getFastReactionById(db, userFastReactions.reaction_1)),
                     createNotificationReplyButton(zulipMessageId, getFastReactionById(db, userFastReactions.reaction_2)),
+                ], [
                     createNotificationReplyButton(zulipMessageId, getFastReactionById(db, userFastReactions.reaction_3)),
                     createNotificationReplyButton(zulipMessageId, getFastReactionById(db, userFastReactions.reaction_4)),
                 ]

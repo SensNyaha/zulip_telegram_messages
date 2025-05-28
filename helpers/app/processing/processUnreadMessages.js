@@ -22,9 +22,9 @@ const processUnreadMessages = async (db, bot, messages, user) => {
 
         let telegramMessageContent;
         if (choppedMsg.type === "private") {
-            telegramMessageContent = `*${choppedMsg.sender_full_name} sent you in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}*\n\n${choppedMsg.content}`;
+            telegramMessageContent = `${choppedMsg.sender_full_name} sent you in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
         } else if (choppedMsg.type === "stream") {
-            telegramMessageContent = `*${choppedMsg.sender_full_name} sent in ${choppedMsg.display_recipient} in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}*\n\n${choppedMsg.content}`;
+            telegramMessageContent = `${choppedMsg.sender_full_name} sent in ${choppedMsg.display_recipient} in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
         } else {
             telegramMessageContent = JSON.stringify(choppedMsg);
         }
@@ -49,7 +49,7 @@ const processUnreadMessages = async (db, bot, messages, user) => {
                                 parse_mode: "Markdown"
                             })
                     } catch (error) {
-                        await bot.telegram.sendMessage(user.id,
+                        res = await bot.telegram.sendMessage(user.id,
                             convertToEmoji(telegramMessageContent),
                             {
                                 ...createNotificationReplyKeyboard(db, choppedMsg.id, userFastReactions),
