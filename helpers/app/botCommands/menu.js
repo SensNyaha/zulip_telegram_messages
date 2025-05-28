@@ -3,7 +3,9 @@ const menu = async(ctx) => {
         reply_markup: {
             keyboard: [
                 ['/register', '/unregister'],
-                ["/verifyapikey", "/changeapikey"],
+                ["/testrequest", "/changeapikey"],
+                ["/freeze", "/unfreeze"],
+                ["/changetimeout", "/switchlang"],
                 ["/help", "/cancel"]
             ],
             resize_keyboard: true,

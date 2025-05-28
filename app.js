@@ -31,12 +31,14 @@ const help = require("./helpers/app/botCommands/help");
 const register = require("./helpers/app/botCommands/register");
 const unregister = require("./helpers/app/botCommands/unregister");
 const changeApiKey = require("./helpers/app/botCommands/changeapikey");
-const verifyApiKey = require("./helpers/app/botCommands/verifyapikey");
+const testRequest = require("./helpers/app/botCommands/testrequest");
 const messageEvent = require("./helpers/app/botEvents/message");
 const callbackQueryEvent = require("./helpers/app/botEvents/callbackQuery");
 
 
 const processAllUsers = require("./helpers/app/processing/processAllUsers");
+const freeze = require("./helpers/app/botCommands/freeze");
+const unfreeze = require("./helpers/app/botCommands/unfreeze");
 
 bot.command("start", async (ctx) => menu(ctx))
 bot.command("menu", async (ctx) => menu(ctx))
@@ -45,7 +47,9 @@ bot.command("cancel", async (ctx) => cancel(ctx))
 bot.command("register", async (ctx) => register(ctx, db))
 bot.command("unregister", async (ctx) => unregister(ctx, db))
 bot.command("changeapikey", async (ctx) => changeApiKey(ctx, db))
-bot.command("verifyapikey", async (ctx) => verifyApiKey(ctx, db))
+bot.command("testrequest", async (ctx) => testRequest(ctx, db))
+bot.command("freeze", async (ctx) => freeze(ctx, db));
+bot.command("unfreeze", async (ctx) => unfreeze(ctx, db));
 
 bot.on("message", async (ctx) => messageEvent(ctx, db));
 bot.on("callback_query", async (ctx) => callbackQueryEvent(ctx, db, bot))
@@ -57,6 +61,4 @@ setInterval(processAllUsers, 5000, db, bot)
 //TODO: сделать возможность изменять список своих быстрых реакций
 //TODO: сделать возможность настраивать таймаут реакции на сообщение
 //TODO: добавить русский язык
-//TODO: добавить опцию хелпа
-//TODO: завести блокирование и разблокирование пользователя при замене api ключа
 //TODO: добавить команду на проверку того что твои входные данные не залочены и аккаунт не заморожен

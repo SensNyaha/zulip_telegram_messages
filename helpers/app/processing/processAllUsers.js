@@ -20,7 +20,7 @@ async function processUserByCredentials(db, bot, userCredentials) {
     if (userCredentials.verified === 0) return;
 
     const user = getUserById(db, userCredentials.user_id);
-    if (user.frozen > 0) return;
+    if (user.isFrozen > 0) return;
 
     let messages = await fetchUsersUnreadMessages(convertZulipCredentialsFromDbToRequest(userCredentials), 1000);
     if (messages === null) {
