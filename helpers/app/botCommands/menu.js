@@ -4,7 +4,7 @@ const menu = async(ctx) => {
             keyboard: [
                 ['/register', '/unregister'],
                 ["/verifyapikey", "/changeapikey"],
-                ["/cancel"]
+                ["/help", "/cancel"]
             ],
             resize_keyboard: true,
             one_time_keyboard: true,

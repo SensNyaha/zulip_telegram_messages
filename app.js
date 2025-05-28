@@ -27,6 +27,7 @@ initDB(db)
 // импорты функций для работы части логики
 const menu = require("./helpers/app/botCommands/menu");
 const cancel = require("./helpers/app/botCommands/cancel");
+const help = require("./helpers/app/botCommands/help");
 const register = require("./helpers/app/botCommands/register");
 const unregister = require("./helpers/app/botCommands/unregister");
 const changeApiKey = require("./helpers/app/botCommands/changeapikey");
@@ -39,6 +40,7 @@ const processAllUsers = require("./helpers/app/processing/processAllUsers");
 
 bot.command("start", async (ctx) => menu(ctx))
 bot.command("menu", async (ctx) => menu(ctx))
+bot.command("help", async (ctx) => help(ctx, bot))
 bot.command("cancel", async (ctx) => cancel(ctx))
 bot.command("register", async (ctx) => register(ctx, db))
 bot.command("unregister", async (ctx) => unregister(ctx, db))
@@ -56,3 +58,5 @@ setInterval(processAllUsers, 5000, db, bot)
 //TODO: сделать возможность настраивать таймаут реакции на сообщение
 //TODO: добавить русский язык
 //TODO: добавить опцию хелпа
+//TODO: завести блокирование и разблокирование пользователя при замене api ключа
+//TODO: добавить команду на проверку того что твои входные данные не залочены и аккаунт не заморожен
