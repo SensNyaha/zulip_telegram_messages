@@ -4,6 +4,7 @@ const createNewTelegramNotification = require("../../sqlite/creatings/createNewT
 const getUserFastReactions = require("../../sqlite/gettings/getUserFastReactions");
 const formatTimeLocalized = require("../others/formatTime");
 const convertToEmoji = require("./convertToEmoji");
+const getUserLang = require("../../sqlite/gettings/getUserLang");
 
 
 const processUnreadMessages = async (db, bot, messages, user) => {
@@ -22,9 +23,18 @@ const processUnreadMessages = async (db, bot, messages, user) => {
 
         let telegramMessageContent;
         if (choppedMsg.type === "private") {
-            telegramMessageContent = `${choppedMsg.sender_full_name} sent you in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
+            if (getUserLang(db, user.id) === "rus") {
+                telegramMessageContent = `${choppedMsg.sender_full_name} отправил Вам в ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
+            } else {
+                telegramMessageContent = `${choppedMsg.sender_full_name} sent you in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
+            }
         } else if (choppedMsg.type === "stream") {
-            telegramMessageContent = `${choppedMsg.sender_full_name} sent in ${choppedMsg.display_recipient} in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
+            if (getUserLang(db, user.id) === "rus") {
+                telegramMessageContent = `${choppedMsg.sender_full_name} отправил в ${choppedMsg.display_recipient} в ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
+            } else {
+                telegramMessageContent = `${choppedMsg.sender_full_name} sent in ${choppedMsg.display_recipient} in ${formatTimeLocalized(choppedMsg.timestamp * 1000)}\n\n\n${choppedMsg.content}`;
+            }
+
         } else {
             telegramMessageContent = JSON.stringify(choppedMsg);
         }

@@ -34,14 +34,14 @@ const changeApiKey = require("./helpers/app/botCommands/changeapikey");
 const testRequest = require("./helpers/app/botCommands/testrequest");
 const messageEvent = require("./helpers/app/botEvents/message");
 const callbackQueryEvent = require("./helpers/app/botEvents/callbackQuery");
-
-
 const processAllUsers = require("./helpers/app/processing/processAllUsers");
 const freeze = require("./helpers/app/botCommands/freeze");
 const unfreeze = require("./helpers/app/botCommands/unfreeze");
 const changeTimeout = require("./helpers/app/botCommands/changetimeout");
+const start = require("./helpers/app/botCommands/start");
+const switchLang = require("./helpers/app/botCommands/switchlang");
 
-bot.command("start", async (ctx) => menu(ctx))
+bot.command("start", async (ctx) => start(ctx, db))
 bot.command("menu", async (ctx) => menu(ctx))
 bot.command("help", async (ctx) => help(ctx, bot))
 bot.command("cancel", async (ctx) => cancel(ctx))
@@ -51,7 +51,7 @@ bot.command("changeapikey", async (ctx) => changeApiKey(ctx, db))
 bot.command("testrequest", async (ctx) => testRequest(ctx, db))
 bot.command("freeze", async (ctx) => freeze(ctx, db));
 bot.command("unfreeze", async (ctx) => unfreeze(ctx, db));
-bot.command("switchlang", async (ctx) => ctx.reply("in new update"));
+bot.command("switchlang", async (ctx) => switchLang(ctx, db));
 bot.command("changetimeout", async (ctx) => changeTimeout(ctx, db));
 
 bot.on("message", async (ctx) => messageEvent(ctx, db));
@@ -62,4 +62,4 @@ bot.launch()
 setInterval(processAllUsers, 5000, db, bot)
 //TODO: тут сделать раз в час проверку всех замороженных акков на валидность зулипных данных
 //TODO: сделать возможность изменять список своих быстрых реакций
-//TODO: добавить русский язык
+

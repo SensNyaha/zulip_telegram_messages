@@ -62,6 +62,13 @@ function initDB(db) {
             FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE
         );
     `).run();
+
+    db.prepare(`
+        CREATE TABLE IF NOT EXISTS Langs (
+            user_id INTEGER PRIMARY KEY,
+            lang TEXT DEFAULT eng
+        )
+    `).run()
 }
 
 module.exports = initDB;

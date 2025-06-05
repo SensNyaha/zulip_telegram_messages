@@ -4,13 +4,16 @@ const verifyZuliprcConfig = require("../helpers/zulip/verifyZuliprcConfig");
 const initCtxSession = require("../helpers/telegraf/initCtxSession");
 const updateUserApiKey = require("../helpers/sqlite/updatings/updateUserApiKey");
 const getZulipCredentialsByUserId = require("../helpers/sqlite/gettings/getZulipCredentialsByUserId");
+const getUserLang = require("../helpers/sqlite/gettings/getUserLang")
+
+const {NOT_REGISTERED, WRONG_API_KEY, SUCCESS_UPDATE_API_KEY, SMTHNG_WENT_WRONG} = require("../messagesCatalog/messages.cat");
 
 async function processChangeApiKey(ctx, db){
     let newApiKey = getMessageFromCtx(ctx).text
     let foundUserCredentials = getZulipCredentialsByUserId(db, getChatIdFromCtx(ctx))
 
     if (!foundUserCredentials) {
-        ctx.reply("You are not registered with Zulip credentials. Try unregister and register again!")
+        ctx.reply(NOT_REGISTERED[getUserLang(db, getChatIdFromCtx(ctx))])
         initCtxSession(ctx, true);
         return;
     }
@@ -18,16 +21,16 @@ async function processChangeApiKey(ctx, db){
     const zulipVerifySuccess = await verifyZuliprcConfig({...foundUserCredentials, apiKey: newApiKey});
 
     if (!zulipVerifySuccess) {
-        ctx.reply("Something is wrong with your api key. Try again later with another credentials")
+        ctx.reply(WRONG_API_KEY[getUserLang(db, getChatIdFromCtx(ctx))]);
         initCtxSession(ctx, true);
         return;
     }
 
     const success = updateUserApiKey(db, getChatIdFromCtx(ctx), newApiKey)
     if (success) {
-        ctx.reply("Your api key for Zulip successfully updated!")
+        ctx.reply(SUCCESS_UPDATE_API_KEY[getUserLang(db, getChatIdFromCtx(ctx))]);
     } else {
-        ctx.reply("Something went wrong when I try to save your new credentials!")
+        ctx.reply(SMTHNG_WENT_WRONG[getUserLang(db, getChatIdFromCtx(ctx))]);
     }
     initCtxSession(ctx, true);
 

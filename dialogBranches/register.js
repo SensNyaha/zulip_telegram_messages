@@ -5,35 +5,39 @@ const initCtxSession = require("../helpers/telegraf/initCtxSession");
 const getChatIdFromCtx = require("../helpers/telegraf/getChatIdFromCtx");
 const createNewZulipCredentials = require("../helpers/sqlite/creatings/createNewZulipCredentials");
 const createNewUserFastReactions = require("../helpers/sqlite/creatings/createNewUserFastReactions");
+const {ENTER_EMAIL, ENTER_ZULIP_URL, WRONG_CREDENTIALS, SMTHNG_WENT_WRONG, GOOD_CREDENTIALS, USER_CREATED,
+    REGISTER_SUCCESS
+} = require("../messagesCatalog/messages.cat");
+const getUserLang = require("../helpers/sqlite/gettings/getUserLang");
 
 
 async function processRegistration(ctx, db) {
     if (ctx.session.currentStageInfo.apiKey === null) {
         ctx.session.currentStageInfo.apiKey = getMessageFromCtx(ctx).text
-        ctx.reply("Enter your email - domain address")
+        ctx.reply(ENTER_EMAIL[getUserLang(db, getChatIdFromCtx(ctx))]);
     } else if (ctx.session.currentStageInfo.username === null) {
         ctx.session.currentStageInfo.username = getMessageFromCtx(ctx).text
-        ctx.reply("Enter your zulip server url WITH A CLOSING SLASH IN THE END OF THE URL")
+        ctx.reply(ENTER_ZULIP_URL[getUserLang(db, getChatIdFromCtx(ctx))]);
     } else if (ctx.session.currentStageInfo.realm === null) {
         ctx.session.currentStageInfo.realm = getMessageFromCtx(ctx).text
         const verifyResult = await verifyZuliprcConfig({...ctx.session.currentStageInfo});
         if (!verifyResult) {
-            ctx.reply("There was an error while verifying your Zulip credentials. Try again with another credentials")
+            ctx.reply(WRONG_CREDENTIALS[getUserLang(db, getChatIdFromCtx(ctx))]);
         } else {
-            await ctx.reply("Your credentials is OK! Trying to save your data in my DB")
+            await ctx.reply(GOOD_CREDENTIALS[getUserLang(db, getChatIdFromCtx(ctx))]);
             const successAddingUser = createNewUser(db, getChatIdFromCtx(ctx))
             const successAddingUserFastReactions = createNewUserFastReactions(db, getChatIdFromCtx(ctx))
             if (successAddingUser && successAddingUserFastReactions) {
-                ctx.reply("User successfully created. Trying to save your Zulip credentials in my DB")
+                ctx.reply(USER_CREATED[getUserLang(db, getChatIdFromCtx(ctx))]);
 
                 const successAddingZulipCredentials = createNewZulipCredentials(db, getChatIdFromCtx(ctx), {...ctx.session.currentStageInfo}, true)
                 if (successAddingZulipCredentials) {
-                    ctx.reply("Your Zulip credentials saved successfully. Registration process is finished!")
+                    ctx.reply(REGISTER_SUCCESS[getUserLang(db, getChatIdFromCtx(ctx))]);
                 } else {
-                    ctx.reply("Something happened while i was trying to work with DB. Try again next time!")
+                    ctx.reply(SMTHNG_WENT_WRONG[getUserLang(db, getChatIdFromCtx(ctx))]);
                 }
             } else {
-                ctx.reply("Something happened while i was trying to work with DB. Try again next time!")
+                ctx.reply(SMTHNG_WENT_WRONG[getUserLang(db, getChatIdFromCtx(ctx))]);
             }
         }
         initCtxSession(ctx, true)

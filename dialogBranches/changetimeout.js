@@ -4,28 +4,31 @@ const getChatIdFromCtx = require("../helpers/telegraf/getChatIdFromCtx");
 const getUserById = require("../helpers/sqlite/gettings/getUserById");
 const updateUserNotifyTimeout = require("../helpers/sqlite/updatings/updateUserNotifyTimeout");
 
+const {NOT_REGISTERED, SMTHNG_WENT_WRONG, WRONG_SEC_INPUT, SUCCESS_UPDATE_TIMEOUT} = require("../messagesCatalog/messages.cat");
+const getUserLang = require("../helpers/sqlite/gettings/getUserLang");
+
 
 async function processChangeTimeout(ctx, db) {
     let newTimeout = getMessageFromCtx(ctx).text
 
     if (isNaN(newTimeout)) {
-        ctx.reply("You entered wrong value. Enter value in seconds. Try again!");
+        ctx.reply(WRONG_SEC_INPUT[getUserLang(db, getChatIdFromCtx(ctx))]);
         return;
     }
 
     let foundUser = getUserById(db, getChatIdFromCtx(ctx))
 
     if (!foundUser) {
-        ctx.reply("You are not registered yet")
+        ctx.reply(NOT_REGISTERED[getUserLang(db, getChatIdFromCtx(ctx))]);
         initCtxSession(ctx, true);
         return;
     }
 
     const success = updateUserNotifyTimeout(db, getChatIdFromCtx(ctx), Number(newTimeout))
     if (success) {
-        ctx.reply("Your notification timeout has been upgraded!")
+        ctx.reply(SUCCESS_UPDATE_TIMEOUT[getUserLang(db, getChatIdFromCtx(ctx))]);
     } else {
-        ctx.reply("Something went wrong when I try to save your new notify timeout!")
+        ctx.reply(SMTHNG_WENT_WRONG[getUserLang(db, getChatIdFromCtx(ctx))])
     }
     initCtxSession(ctx, true);
 }
