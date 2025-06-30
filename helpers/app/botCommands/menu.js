@@ -1,5 +1,5 @@
 const menu = async(ctx) => {
-    ctx.reply('Choose action:', {
+    ctx.reply('Выберите действие [Choose action] :', {
         reply_markup: {
             keyboard: [
                 ["/help"],
@@ -7,7 +7,7 @@ const menu = async(ctx) => {
                 ["/testrequest", "/changeapikey"],
                 ["/freeze", "/unfreeze"],
                 ["/changetimeout", "/switchlang"],
-                ["/cancel"]
+                ["/changefires", "/cancel"]
             ],
             resize_keyboard: true,
         },

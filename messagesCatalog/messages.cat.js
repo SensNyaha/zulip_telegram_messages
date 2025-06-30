@@ -153,6 +153,31 @@ const UNREGISTER_SUCCESS = {
     eng: "Your account successfully unregistered!"
 }
 
+const USER_WAS_FIRED = {
+    rus: "Пользователь был уволен",
+    eng: "User was fired"
+}
+
+const FIRED_NOTIFICATIONS_ENABLED = {
+    rus: "Уведомления о увольнении включены",
+    eng: "Fired notifications enabled"
+}
+
+const FIRED_NOTIFICATIONS_DISABLED = {
+    rus: "Уведомления о увольнении выключены",
+    eng: "Fired notifications disabled"
+}
+
+const FIRED_NOTIFICATIONS_ALREADY_ENABLED = {
+    rus: "Уведомления о увольнении уже включены",
+    eng: "Fired notifications already enabled"
+}
+
+const FIRED_NOTIFICATIONS_ALREADY_DISABLED = {
+    rus: "Уведомления о увольнении уже выключены",
+    eng: "Fired notifications already disabled"
+}
+
 const CHOOSE_ACTION = {
     rus: "Выберите действие: ",
     eng: "Choose action: "
@@ -190,5 +215,10 @@ module.exports = {
     ALREADY_UNFROZEN,
     UNREGISTER_SUCCESS,
     CHOOSE_ACTION,
-    ALREADY_REGISTERED
+    ALREADY_REGISTERED,
+    USER_WAS_FIRED,
+    FIRED_NOTIFICATIONS_ENABLED,
+    FIRED_NOTIFICATIONS_DISABLED,
+    FIRED_NOTIFICATIONS_ALREADY_ENABLED,
+    FIRED_NOTIFICATIONS_ALREADY_DISABLED
 }

@@ -35,11 +35,13 @@ const testRequest = require("./helpers/app/botCommands/testrequest");
 const messageEvent = require("./helpers/app/botEvents/message");
 const callbackQueryEvent = require("./helpers/app/botEvents/callbackQuery");
 const processAllUsers = require("./helpers/app/processing/processAllUsers");
+const getFiredUsers = require("./helpers/app/processing/getFiredUsers");
 const freeze = require("./helpers/app/botCommands/freeze");
 const unfreeze = require("./helpers/app/botCommands/unfreeze");
 const changeTimeout = require("./helpers/app/botCommands/changetimeout");
 const start = require("./helpers/app/botCommands/start");
 const switchLang = require("./helpers/app/botCommands/switchlang");
+const changeFires = require("./helpers/app/botCommands/changefires");
 
 bot.command("start", async (ctx) => start(ctx, db))
 bot.command("menu", async (ctx) => menu(ctx))
@@ -53,6 +55,7 @@ bot.command("freeze", async (ctx) => freeze(ctx, db));
 bot.command("unfreeze", async (ctx) => unfreeze(ctx, db));
 bot.command("switchlang", async (ctx) => switchLang(ctx, db));
 bot.command("changetimeout", async (ctx) => changeTimeout(ctx, db));
+bot.command("changefires", async (ctx) => changeFires(ctx, db));
 
 bot.on("message", async (ctx) => messageEvent(ctx, db));
 bot.on("callback_query", async (ctx) => callbackQueryEvent(ctx, db, bot))
@@ -60,6 +63,7 @@ bot.on("callback_query", async (ctx) => callbackQueryEvent(ctx, db, bot))
 bot.launch()
 
 setInterval(processAllUsers, 5000, db, bot)
+setInterval(getFiredUsers, 1000 * 60 * 60, db, bot)
 //TODO: тут сделать раз в час проверку всех замороженных акков на валидность зулипных данных
 //TODO: сделать возможность изменять список своих быстрых реакций
 
