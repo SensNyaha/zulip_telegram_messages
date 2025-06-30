@@ -18,7 +18,7 @@ const changeFires = async (ctx, db) => {
   const result = getUserFiringNotificationStatus(db, getChatIdFromCtx(ctx));
   if (!result) {
     createUserFiringNotificationStatus(db, getChatIdFromCtx(ctx));
-    await ctx.reply(FIRED_NOTIFICATIONS_DISABLED[getUserLang(db, getChatIdFromCtx(ctx))]);
+    await ctx.reply(FIRED_NOTIFICATIONS_ENABLED[getUserLang(db, getChatIdFromCtx(ctx))]);
     return;
   }
 
