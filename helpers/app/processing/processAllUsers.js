@@ -6,6 +6,7 @@ const unverifyZulipCredentials = require("../../sqlite/updatings/unverifyZulipCr
 const getUserById = require("../../sqlite/gettings/getUserById");
 const processUnreadMessages = require("./processUnreadMessages");
 const processTelegramNotifications = require("./processTelegramNotifications");
+const resetZulipCredentialsFailedAttempts = require("../../sqlite/updatings/resetZulipCredentialsFailedAttempts");
 
 
 async function processAllUsers(db, bot){
@@ -29,6 +30,8 @@ async function processUserByCredentials(db, bot, userCredentials) {
             unverifyZulipCredentials(db, userCredentials.user_id);
         }
         return;
+    } else {
+        resetZulipCredentialsFailedAttempts(db, userCredentials.user_id);
     }
 
     processUnreadMessages(db, bot, messages, user)

@@ -16,9 +16,10 @@ async function getFiredUsers(db, bot) {
             const resultOfNewFiredEmployees = await fetchFiredUsersWithCredentials(db, userCredentials);
             if (resultOfNewFiredEmployees && resultOfNewFiredEmployees.length > 0) {
             for (let userCredentials of zulipCredentials) {
+                console.log(userCredentials.username)
                 if (userCredentials.verified === 1 && getUserById(db, userCredentials.user_id)?.isFrozen === 0 && getUserFiringNotificationStatus(db, userCredentials.user_id)?.notifyStatus === 1) {
-                    resultOfNewFiredEmployees.forEach(fired => {
-                        bot.telegram.sendMessage(userCredentials.user_id, USER_WAS_FIRED[getUserLang(db, userCredentials.user_id)] + " - " + fired.full_name)
+                    resultOfNewFiredEmployees.forEach(async (fired) => {
+                        await bot.telegram.sendMessage(userCredentials.user_id, USER_WAS_FIRED[getUserLang(db, userCredentials.user_id)] + " - " + fired.full_name)
                     })
                 }
             }
