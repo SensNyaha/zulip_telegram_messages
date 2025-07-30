@@ -1,0 +1,16 @@
+[Unit]
+Description=Zulip Telegram Messages Bot APP
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/zulip_telegram_messages
+ExecStart=/root/.nvm/versions/node/v22.17.1/bin/node app.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=zulip_telegram_messages
+
+[Install]
+WantedBy=multi-user.target

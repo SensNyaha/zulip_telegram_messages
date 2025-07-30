@@ -1,28 +1,27 @@
 // импорты системных библиотек
-const path = require('path');
-const dotenv = require('dotenv');
-dotenv.config();
+const path = require("path");
+const dotenv = require("dotenv");
+dotenv.config({ path: __dirname + "/.env" });
 
 // импорт драйвера для работы с SQLite
-const SQLite = require("better-sqlite3")
+const SQLite = require("better-sqlite3");
 
 // импорт окружения для создания бота телеграм
-const { Telegraf, session } = require('telegraf')
-const { Redis } = require("@telegraf/session/redis")
+const { Telegraf, session } = require("telegraf");
+const { Redis } = require("@telegraf/session/redis");
 
 // инициализация бота телеграм и хранилища для работы с сессионными данными
-const bot = new Telegraf(process.env.TG_BOT_KEY)
+const bot = new Telegraf(process.env.TG_BOT_KEY);
 const store = Redis({ url: process.env.REDIS_URL });
-bot.use(session( store ));
-
+bot.use(session(store));
 
 // инициализация SQLite хранилища для приложения
-const sqliteDbFile = path.resolve(__dirname, 'sqlite3.db');
+const sqliteDbFile = path.resolve(__dirname, "sqlite3.db");
 const db = new SQLite(sqliteDbFile);
 
 // инициализация таблиц базы данных
 const initDB = require("./helpers/sqlite/initializings/initDB");
-initDB(db)
+initDB(db);
 
 // импорты функций для работы части логики
 const menu = require("./helpers/app/botCommands/menu");
@@ -43,14 +42,14 @@ const start = require("./helpers/app/botCommands/start");
 const switchLang = require("./helpers/app/botCommands/switchlang");
 const changeFires = require("./helpers/app/botCommands/changefires");
 
-bot.command("start", async (ctx) => start(ctx, db))
-bot.command("menu", async (ctx) => menu(ctx))
-bot.command("help", async (ctx) => help(ctx, bot))
-bot.command("cancel", async (ctx) => cancel(ctx))
-bot.command("register", async (ctx) => register(ctx, db))
-bot.command("unregister", async (ctx) => unregister(ctx, db))
-bot.command("changeapikey", async (ctx) => changeApiKey(ctx, db))
-bot.command("testrequest", async (ctx) => testRequest(ctx, db))
+bot.command("start", async (ctx) => start(ctx, db));
+bot.command("menu", async (ctx) => menu(ctx));
+bot.command("help", async (ctx) => help(ctx, bot));
+bot.command("cancel", async (ctx) => cancel(ctx));
+bot.command("register", async (ctx) => register(ctx, db));
+bot.command("unregister", async (ctx) => unregister(ctx, db));
+bot.command("changeapikey", async (ctx) => changeApiKey(ctx, db));
+bot.command("testrequest", async (ctx) => testRequest(ctx, db));
 bot.command("freeze", async (ctx) => freeze(ctx, db));
 bot.command("unfreeze", async (ctx) => unfreeze(ctx, db));
 bot.command("switchlang", async (ctx) => switchLang(ctx, db));
@@ -58,12 +57,11 @@ bot.command("changetimeout", async (ctx) => changeTimeout(ctx, db));
 bot.command("changefires", async (ctx) => changeFires(ctx, db));
 
 bot.on("message", async (ctx) => messageEvent(ctx, db));
-bot.on("callback_query", async (ctx) => callbackQueryEvent(ctx, db, bot))
+bot.on("callback_query", async (ctx) => callbackQueryEvent(ctx, db, bot));
 
-bot.launch()
+bot.launch();
 
-setInterval(processAllUsers, 5000, db, bot)
-setInterval(getFiredUsers, 1000 * 60 * 60, db, bot)
+setInterval(processAllUsers, 5000, db, bot);
+setInterval(getFiredUsers, 1000 * 60 * 60, db, bot);
 //TODO: тут сделать раз в час проверку всех замороженных акков на валидность зулипных данных
 //TODO: сделать возможность изменять список своих быстрых реакций
-

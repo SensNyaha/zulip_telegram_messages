@@ -5,20 +5,16 @@
 ### 1.1 Установка Node.js на компьютер
 
 - **Скачать с официального сайта:**  
-    [https://nodejs.org/en/download](https://nodejs.org/en/download)
-    
+   [https://nodejs.org/en/download](https://nodejs.org/en/download)
 - **Для Linux:**  
-    Рекомендуется установка через `nvm` (Node Version Manager):
-    
-    ```bash
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    source ~/.bashrc
-    nvm install --lts
-    ```
-    
+   Рекомендуется установка через `nvm` (Node Version Manager):
+  ```bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  source ~/.bashrc
+  nvm install --lts
+  ```
 - **Для Windows:**  
-    Устанавливайте `.msi` версию
-    
+   Устанавливайте `.msi` версию
 
 ### 1.2 Проверка установки
 
@@ -38,11 +34,9 @@ npm -v
 ### 2.1 Установка Docker
 
 - **Для Windows и macOS:**  
-    Устанавливайте [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-    
+   Устанавливайте [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - **Для Linux:**  
-    Следуйте официальной инструкции по установке [Docker Engine](https://docs.docker.com/engine/install/)
-    
+   Следуйте официальной инструкции по установке [Docker Engine](https://docs.docker.com/engine/install/)
 
 ### 2.2 Проверка установки
 
@@ -64,13 +58,9 @@ docker run -d --name redis-zulip-msg -p 6379:6379 redis
 ```
 
 - `redis-zulip-msg` — имя контейнера (можно изменить)
-    
 - `6379:6379` — проброс порта
-    
 - `-v redis_data:/data` — том для хранения данных
-    
 - `--appendonly yes` — включение сохранения данных Redis
-    
 
 ### 2.4 Проверка Redis
 
@@ -102,9 +92,7 @@ REDIS_URL=redis://127.0.0.1:6379
 ```
 
 - `TG_BOT_KEY` — ключ от [BotFather](https://marketolog.mts.ru/blog/kak-sozdat-bota-v-botfather-gaid-dlya-novichkov)
-    
 - `REDIS_URL` — адрес Redis (оставьте как есть при дефолтных настройках)
-    
 
 ### 3.3 Установка зависимостей
 
@@ -115,6 +103,13 @@ npm install
 ```
 
 Дождитесь, пока все зависимости будут установлены.
+
+Если при загрузке зависимостей будет ошибка, связанная с невозможностью установки C-шных библиотек
+
+```bash
+sudo apt update
+sudo apt install -y build-essential python3-minimal
+```
 
 ### 3.4 Запуск проекта
 
