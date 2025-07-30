@@ -23,7 +23,7 @@ if [ "$OLD_COMMIT" != "$NEW_COMMIT" ]; then
     # Тут выполняем нужные команды, если репозиторий обновился
     echo "Запускаю дополнительные команды..." >> "$LOG_FILE"
 
-    sh "$REPO_DIR/deploy.sh"
+    /bin/bash "$REPO_DIR/deploy.sh"
 else
     echo "[$(date)] No changes detected." >> "$LOG_FILE"
 fi
