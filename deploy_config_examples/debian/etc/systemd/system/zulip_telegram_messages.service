@@ -5,6 +5,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=/root/zulip_telegram_messages
+ExecStartPre=docker start redis-zulip-msg
 ExecStart=/root/.nvm/versions/node/v22.17.1/bin/node app.js
 Restart=always
 RestartSec=10
